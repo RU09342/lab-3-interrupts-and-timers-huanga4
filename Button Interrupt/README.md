@@ -1,30 +1,32 @@
-# Button Interrupt
-Last lab you were introduced to the idea of "Polling" where in you would constantly check the status of the P1IN register to see if something has changed. While your code may have worked, it ends up spending a ton of time just checking something that has not changed. What we can do instead is use another two registers available to us from the GPIO peripheral, P1IE and P1IES, to allow our processor to just chill out and wait until something happens to act upon it. Without spending too much space on this README with explanations, what makes these interrupts tick is the following code:
+#Button Interrupt
+##Author: Austin Huang   Co op: Matthew Rodriguez, Seamus Plunkett
+##Summary 
+An LED's state(on or off) is changed when the button is pressed.
 
-'''c
-#pragma vector=PORT1_VECTOR
-__interrupt void Port_1(void)
-{
-}
-'''
+##Notes
+Because this program can be run on different MSP430 boards that use different pins, the specific pin numbers are replaced with the variable "X" (i.e. PXOUT ^= BITX;)
+The first thing this program does is stop the watch dog timer to ensure that the processor is not reset. This is done by the statement:
+```c
+    WDTCTL = WDTPW + WDTHOLD or WDTCTL = WDTPW | WDTHOLD
+```
+The pins are first initialized to determine which are inputs and outputs. 
+Example:
+```c
+    PXDIR |= BITX;                          // Set P1.0 to output direction
+    PXOUT &= ~BITX;                         // Switch LED off
+    PXDIR  &= ~BITX;                        // Set P5.6 as input
+    PXOUT |= BITX;                          // Configure P5.6 for Pull-Up
+    PXREN |= BITX;                          // Enable Pull Up of P5.6
+```
 
-While you still need to initialize the Ports to be interrupt enabled and clear the flags, this "Pragma Vector" tells the compiler that when a particular interrupt occurs, run this code. 
+##How it works
+When the button on the board is pressed an interrupt occurs. This executes a block of code that toggles the state of an LED.
 
-## A word of caution...
-While you might be willing to just jump straight in and begin using example code you may find, I would seriously take a few minutes and find a few good videos or tutorials to help understand exactly what is happening in the processor. I implore you to do this since you will inevitably have issues in the future which are solved by not understanding how the processor processes interrupts. A prime example is when I once tried implementing UART and I did not realize that you had to clear a flag or else my code would get stuck in an infinite loop. Hours of my life are now gone thanks to me at the time not understanding how interrupts worked with the peripherals I was utilizing. A few resources I have used in the past include:
-* https://youtu.be/GR8S2XT47eI?t=1334
-* http://processors.wiki.ti.com/index.php/MSP430_LaunchPad_Interrupt_vs_Polling
-* http://www.simplyembedded.org/tutorials/msp430-interrupts/
+##Differences between boards
+The pin assignments on each board can be different.
+Certain boards with FR require high impedence on a pin to be disabled.
+Certain boards use a different timer.
+Certain boards are unable to use PXSEL and need the timer connected to the LED externally.
 
-## Task
-Your goal for this part of the lab is to replicate your button code from Lab 2, where the LED should change states only when the button is pressed. This can be extended to include behaviors such as only have the LED on when the button is depressed, or have the LED blink one color when pressed and another when it is let go. Another behavior extends from the second lab which is speed control based on the button presses. For example, have the rate of the LED cycle between a "low", "Medium", and "High" rate of speed.
-
-## Extra Work 
-### Binary Counter/Shift Register
-Either use a function generator, another processor, or a button to control your microcontroller as an 8-bit binary counter using 8 LEDs to indicate the current status of the counter.
-
-### Multiple Buttons
-Come up with a behavior of your own that incorporates needing to use two buttons or more and these two buttons must be implemented using interrupts.
-
-### (Recommended) Energy Trace
-Using the built in EnergyTrace(R) software in CCS and the corresponding supporting hardware on the MSP430 development platforms, analyze the power consumption between the button based blink code you wrote last week versus this week. What can you do to decrease the amount of power used within the microcontroller in this code? Take a look at the MSP430FR5994 and the built in SuperCap and see how long your previous code and the new code lasts. For a quick intro to EnergyTrace(R), take a look at this video: https://youtu.be/HqeDthLrcsg
+##Implementation
+Use a C compiler to run the code and upload it to an MSP430. Press the button and the LED changes states.

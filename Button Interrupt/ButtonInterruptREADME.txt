@@ -1,7 +1,7 @@
-#Button Based Delay
-##Author: Austin Huang  Co op: Matthew Rodriguez, Seamus Plunkett
+#Button Interupt
+##Author: Austin Huang   Co op: Matthew Rodriguez, Seamus Plunkett
 ##Summary 
-An LED on the MSP430 will blink at a rate dependent on the duration a user holds down the button.
+An LED's state(on or off) is changed when the button is pressed.
 
 ##Notes
 Because this program can be run on different MSP430 boards that use different pins, the specific pin numbers are replaced with the variable "X" (i.e. PXOUT ^= BITX;)
@@ -18,21 +18,9 @@ Example:
     PXOUT |= BITX;                          // Configure P5.6 for Pull-Up
     PXREN |= BITX;                          // Enable Pull Up of P5.6
 ```
-Timer is then initialized.
-Example:
-```c
-    TA0CTL = TASSEL_2 + MC_1 +TACLR ;
-    TA0CCTL1 = OUTMOD_7;
-    TA0CCR0 = 1000;
-    TA0CCR1 = 500;
-```
 
 ##How it works
-###LED blinking.
-When the timer reaches a specified value an interrupt occurs. When the timer reaches the TA0CCR0 the LED toggles.
-###Button Press
-When the button on the board is pressed it will cause an interrupt starting a counter that increments. This timer is tied to the timer 
-that makes the LED blink. When the button is released another interupt is caused setting the TA0CCR0 value to the value of count having an upper limit of 65000.
+When the button on the board is pressed an interrupt occurs. This executes a block of code that toggles the state of an LED.
 
 ##Differences between boards
 The pin assignments on each board can be different.
@@ -41,4 +29,4 @@ Certain boards use a different timer.
 Certain boards are unable to use PXSEL and need the timer connected to the LED externally.
 
 ##Implementation
-Use a C compiler to run the code and upload it to an MSP430. Press the button for some amount of time, the LEDs blinking rate changes accordingly.
+Use a C compiler to run the code and upload it to an MSP430. Press the button and the LED changes states.
