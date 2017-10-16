@@ -11,7 +11,7 @@ int buttonPress;
 
 void main(void)
 {
-    WDTCTL = WDTPW | WDTHOLD; //Stop watchdog timer
+    WDTCTL = WDTPW | WDTHOLD; //Stop watchdog 
 
     P1SEL &= ~BIT0;
     P1DIR |= BIT0;
@@ -21,52 +21,50 @@ void main(void)
     P1OUT |= BIT3;
 
 
-    P1IE |= BIT3; //enable the interrupt on Port 1.3
-    P1IES |= BIT3; //set as falling edge
-    P1IFG &= ~(BIT3); //clear interrupt flag
+    P1IE |= BIT3; //enable interrupt
+    P1IES |= BIT3; //set falling edge
+    P1IFG &= ~(BIT3); //clear flag
 
-    TA0CTL = TASSEL_1 + MC_1 + ID_2; //Set up Timer A, Count up, and divider 4.
-    TA0CCTL0 = 0x10; //Set up compare mode for CCTL
-    TA0CCR0 = 1600; // LED will blink at 32kHZ*2/1600 = 10.6 Hz
-
-    //enter LPM0 mode and enable global interrupt
-           _BIS_SR(LPM0_bits + GIE);
+    TA0CTL = TASSEL_1 + MC_1 + ID_2; //setTimer A, Up mode, divider value 4
+    TA0CCTL0 = 0x10; //set compare mode for CCTL
+    TA0CCR0 = 1600; // LED blinks at 32kHZ*2/1600 or 10.6 Hz
+    
+    _BIS_SR(LPM0_bits + GIE);  // enter LPM0
 }
 
 #pragma vector=TIMER0_A0_VECTOR
 __interrupt void Timer_A0(void)
 {
 
-    P1OUT ^= 0x01; //Toggle LED
+    P1OUT ^= 0x01; //Toggle 
 
 }
 
-// Timer0 Interrupt Service Routine
 #pragma vector=PORT1_VECTOR
 __interrupt void PORT_1(void)
 {
-    //Debouncing
+    //Debounce
     P1IE &= ~BIT3;
     __delay_cycles(1);
 
-if (buttonPress == 0) //Falling-edge of a button
-    {
-        TA1CTL = TASSEL_1+ MC_3; // Selecting Timer A and Count Continuous
-        TA1CCR0 = 0xFFFF; //Initialize value of TA1CCR0
+if (buttonPress == 0) //Falling edge
+{
+        TA1CTL = TASSEL_1+ MC_3; // select Timer A, Continuous
+        TA1CCR0 = 0xFFFF; /initialize TA1CCR0
         TA1CCTL0 = CAP; //Capture mode
         buttonPress = 1;
-        TA0CCR0 = 1; //Reset CCR0
+        TA0CCR0 = 1; //reset CCR0
 
     }
-    else if (buttonPress == 1) //Rising-edge of a button
+    else if (buttonPress == 1) //rising edge
     {
-        TA1CTL = MC_0; //Stop Counting
-        TA0CCR0 = TA1R; //Assign new value for CCR0
-        if (TA0CCR0 > 65500) //Fastest
+        TA1CTL = MC_0; // stop counting
+        TA0CCR0 = TA1R; //new CCR0 value
+        if (TA0CCR0 > 65500) 
             TA0CCR0 = 0xFFFF;
-        if (TA0CCR0 < 3000) // Slowest
+        if (TA0CCR0 < 3000) 
             TA0CCR0 = 3000;
-        TA1CTL = TACLR; //Clear Timer A1
+        TA1CTL = TACLR; //clear Timer A1
         buttonPress = 0;
     }
 
