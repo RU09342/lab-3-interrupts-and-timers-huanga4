@@ -22,8 +22,8 @@ int main(void) {
     TB0CCR0 = 12000; //set up TB0CCR0; LED frequency = 32kHz/12000 
     TB0CCTL1 = 0x10;    // Set up compare mode
     TB0CCR1 = 3000;     // CCR1 assigned value
-    //enter LPM4 mode and enable global interrupt
-    _BIS_SR(LPM4_bits + GIE);
+    
+    _BIS_SR(LPM4_bits + GIE); //Low Power Mode 4
 
 }
 
