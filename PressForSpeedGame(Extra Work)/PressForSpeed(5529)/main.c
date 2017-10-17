@@ -56,8 +56,8 @@ __interrupt void Timer_A(void)
     }
 
     if (player1 > 60000 || player2 > 60000){
-        player2 = 0;
-        player2 = 0;   // resets after specified amount
+        player2 = 0;    // resets after specified amount
+        player2 = 0;   // "                             "
     }
 }
 
