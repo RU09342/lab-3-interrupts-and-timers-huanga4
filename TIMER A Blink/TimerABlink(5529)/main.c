@@ -7,36 +7,34 @@
  * Timer A
  */
 void main(void) {
-    WDTCTL = WDTPW | WDTHOLD;// Stop watchdog timer
+    WDTCTL = WDTPW | WDTHOLD;// Stop watchdog 
 
-    P1SEL =0; //Choose GPIO option for P1
+    P1SEL =0; //choose GPIO option 
     P1OUT &= ~(BIT0); // Clear P1.0
-    P1DIR |=BIT0; //set Port 1.0 output ---LED
+    P1DIR |=BIT0; //set Port 1.0 LED
 
-    P4SEL =0; //Choose GPIPO option for P4
+    P4SEL =0; //choose GPIO
     P4OUT &= ~(BIT7);
-    P4DIR |=BIT7; //set Port 4.7 output ---LED
+    P4DIR |=BIT7; //set Port 4.7 output LED
 
 
-    TA0CTL= TASSEL_1 + MC_1; //Use ACLK and Up mode.
-    TA0CCTL0 = 0x10; //Set up Timer A0 in the compare mode
-    TA0CCR0 = 12000;  //set up TA0CCR0, and have Timer A0 (TA0R) to count to its contents.
-                      // 32kHz/12000 is the frequency at which the LED will blink
-    TA0CCTL1 = 0x10;    // Set up Timer A instance 1 in Compare mode
-    TA0CCR1 = 3000;     // Set up value for CCR1 to 3000.
-                        // 32kHz/3000 is the frequency at which the LED will blink
-    //enter LPM4 mode and enable global interrupt
-    _BIS_SR(LPM4_bits + GIE);
+    TA0CTL= TASSEL_1 + MC_1; //Set up Timer A0, Up mode, ACLK
+    TA0CCTL0 = 0x10; //set up compare mode
+    TA0CCR0 = 12000; //set up TB0CCR0; LED frequency = 32kHz/12000 
+    TA0CCTL1 = 0x10; //set up compare mode
+    TA0CCR1 = 3000; // CCR1 assigned value
+  
+    _BIS_SR(LPM4_bits + GIE); //Low Power Mode 4
 }
-//Port 1 ISR
+
 #pragma vector=TIMER0_A0_VECTOR
 #pragma vector = TIMER0_A1_VECTOR
 __interrupt void Timer_A(void)
 {
-    P1OUT ^= 0x01; //Toggle the P1.0 LED
-    switch (TA0IV) //Choose the right Interrupt Vector for value of TA0CCR1
+    P1OUT ^= 0x01; //Toggle
+    switch (TA0IV)  //choose correct value for corresponding interrupt
     {
-        case TA0IV_TACCR1: P4OUT ^= BIT7; //Toggle the P4.7 LED
+        case TA0IV_TACCR1: P4OUT ^= BIT7; //Toggle
         break;
     }
 }
