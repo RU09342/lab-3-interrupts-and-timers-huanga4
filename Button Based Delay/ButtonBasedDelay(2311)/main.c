@@ -42,23 +42,22 @@ __interrupt void PORT_1(void)
     P1IE &= ~BIT1;
     __delay_cycles(1);
 
-    if (buttonPress == 0) // Falling edge
-    {
+    if (buttonPress == 0){ // Falling edge
         TB1CTL = TBSSEL_1+ MC_3; // select Timer A, Continuous
         TB1CCR0 = 0xFFFF; //initialize TA1CCR0
         TB1CCTL0 = CAP; //Capture mode
         buttonPress = 1;
         TB0CCR0 = 1; //reset CCR0
-
     }
-    else if (buttonPress == 1) //rising edge
-    {
+    else if (buttonPress == 1){ //rising edge
         TB1CTL = MC_0; // stop counting
         TB0CCR0 = TB1R; //new CCR0 value
-        if (TB0CCR0 > 65500)
+        if (TB0CCR0 > 65500){
             TB0CCR0 = 0xFFFF;
-        if (TB0CCR0 < 3000)
+        }
+        if (TB0CCR0 < 3000){
             TB0CCR0 = 3000;
+        }
         TB1CTL = TBCLR; //clear TimerA1
         buttonPress = 0;
     }
