@@ -15,18 +15,18 @@ void main(void)
     PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
 
 
-    P1DIR |= BIT0; //set Port 1.0 output ---LED
+    P1DIR |= BIT0; //set Port 1.0 LED
 
-    P5DIR &= ~(BIT5); //set Port 5.5 input --- pushbutton
-    P5REN |= BIT5; //enable pull-up resistor Port 5.5
+    P5DIR &= ~(BIT5); //set Port5.5 Button
+    P5REN |= BIT5; //enable pull-up resistor
     P5OUT |= BIT5;
-    P5IE |= BIT5; //enable the interrupt on Port 5.5
-    P5IES |= BIT5; //set as falling edge
-    P5IFG &= ~(BIT5); //clear interrupt flag
+    P5IE |= BIT5; //enable interrupt
+    P5IES |= BIT5; //set falling edge
+    P5IFG &= ~(BIT5); //clear flag
 
-    TA0CTL = TASSEL_1 + MC_1 + ID_1; //Set up Timer A, Count up, and divider 2.
-    TA0CCTL0 = 0x10; //Set up compare mode for CCTL
-    TA0CCR0 = 1600; // LED will blink at 32kHZ*2/1600 = 10 Hz
+    TA0CTL = TASSEL_1 + MC_1 + ID_1; //setTimer A,Up mode, divider value 2
+    TA0CCTL0 = 0x10; //set compare mode for CCTL
+    TA0CCR0 = 1600; // LED blinks at 32kHZ*2/1600 or 10 Hz
 
     __enable_interrupt(); //enable interrupt
     _BIS_SR(LPM4_bits + GIE); // Enter Low Power Mode 4
@@ -43,28 +43,28 @@ __interrupt void Timer_A0(void)
 #pragma vector=PORT5_VECTOR
 __interrupt void PORT_5(void)
 {
-    //Debouncing
+    //Debounce
     P5IE &= ~BIT5;
     __delay_cycles(1);
 
-    if (buttonPress == 0) //Falling-edge of a button
-    {
-        TA1CTL = TASSEL_1+ MC_3; // Selecting Timer A and Count Continuous
-        TA1CCR0 = 0xFFFF; //Initialize value of TA1CCR0
+    if (buttonPress == 0){ //falling edge
+        TA1CTL = TASSEL_1+ MC_3; // select Timer A, Continuous 
+        TA1CCR0 = 0xFFFF; //initialize TA1CCR0
         TA1CCTL0 = CAP; //Capture mode
         buttonPress = 1;
-        TA0CCR0 = 1; //Reset CCR0
+        TA0CCR0 = 1; //reset CCR0
 
     }
-    else if (buttonPress == 1) //Rising-edge of a button
-    {
-        TA1CTL = MC_0; //Stop Counting
-        TA0CCR0 = TA1R; //Assign new value for CCR0
-        if (TA0CCR0 > 65500)
-            TA0CCR0 = 0xFFFF;
-        if (TA0CCR0 < 2000)
+    else if (buttonPress == 1){ //rising edge
+        TA1CTL = MC_0; //stop counting
+        TA0CCR0 = TA1R; // new CCR0 value
+        if (TA0CCR0 > 65500){
+                TA0CCR0 = 0xFFFF;
+        }
+        if (TA0CCR0 < 2000){
             TA0CCR0 = 2000;
-        TA1CTL = TACLR; //Clear Timer A1
+        }
+        TA1CTL = TACLR; //clear Timer A1
         buttonPress = 0;
     }
 
