@@ -17,7 +17,7 @@ int main(void) {
     P1OUT &= ~(BIT1); //Clear P1.1
     P1DIR |=BIT1; //set Port 1.1 LED
 
-    TA0CTL= TASSEL_1 + MC_1; //Set up Timer B0, Up mode, ACLK
+    TA0CTL= TASSEL_1 + MC_1; //Set up Timer A0, Up mode, ACLK
     TA0CCTL0 = 0x10; //set up compare mode
     TA0CCR0 = 12000; //set up TA0CCR0; LED frequency = 32kHz/12000 
     TA0CCTL1 = 0x10; //set up compare mode
