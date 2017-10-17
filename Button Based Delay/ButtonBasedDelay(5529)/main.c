@@ -53,15 +53,13 @@ __interrupt void PORT_1(void)
 
     keepCount ^= 1;    //keeps or continues counting
 
-    if (buttonPressed == 0)
-    {
+    if (buttonPressed == 0){
         count = 3000;
         buttonPressed = 1;   //set buttonPressed variable
         P4OUT |= BIT7;    //turn LED on
         TA0CCR0 = 1;
     }
-    else if (buttonPressed == 1)
-    {
+    else if (buttonPressed == 1){
         TA0CCR0 = count;
 
         buttonPressed = 0;  //set buttonPressed variable
