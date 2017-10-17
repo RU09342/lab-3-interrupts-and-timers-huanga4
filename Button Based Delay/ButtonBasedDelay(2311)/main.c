@@ -23,7 +23,7 @@ void main(void)
 
     TB0CTL = TBSSEL_1 + MC_1 + ID_2; //set Timer A, Up mode, divider value 4
     TB0CCTL0 = 0x10; //set compare mode for CCTL
-    TB0CCR0 = 1600; // LED blinks at 32kHZ*2/1600 = 10 Hz
+    TB0CCR0 = 1600; // LED blinks at 32kHZ*2/1600 or 10 Hz
 
     __enable_interrupt(); //enable interrupt
     _BIS_SR(LPM4_bits + GIE); // enter Low Power Mode 4
