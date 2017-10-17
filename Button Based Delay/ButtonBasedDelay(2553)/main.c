@@ -20,7 +20,6 @@ void main(void)
     P1REN |= BIT3;
     P1OUT |= BIT3;
 
-
     P1IE |= BIT3; //enable interrupt
     P1IES |= BIT3; //set falling edge
     P1IFG &= ~(BIT3); //clear flag
@@ -35,9 +34,7 @@ void main(void)
 #pragma vector=TIMER0_A0_VECTOR
 __interrupt void Timer_A0(void)
 {
-
     P1OUT ^= 0x01; //Toggle 
-
 }
 
 #pragma vector=PORT1_VECTOR
@@ -47,23 +44,23 @@ __interrupt void PORT_1(void)
     P1IE &= ~BIT3;
     __delay_cycles(1);
 
-if (buttonPress == 0) //Falling edge
-{
+if (buttonPress == 0){ //Falling edge
+
         TA1CTL = TASSEL_1+ MC_3; // select Timer A, Continuous
         TA1CCR0 = 0xFFFF; /initialize TA1CCR0
         TA1CCTL0 = CAP; //Capture mode
         buttonPress = 1;
         TA0CCR0 = 1; //reset CCR0
-
     }
-    else if (buttonPress == 1) //rising edge
-    {
+    else if (buttonPress == 1){ //rising edge
         TA1CTL = MC_0; // stop counting
         TA0CCR0 = TA1R; //new CCR0 value
-        if (TA0CCR0 > 65500) 
+        if (TA0CCR0 > 65500){
             TA0CCR0 = 0xFFFF;
-        if (TA0CCR0 < 3000) 
+        }
+        if (TA0CCR0 < 3000){
             TA0CCR0 = 3000;
+        }
         TA1CTL = TACLR; //clear Timer A1
         buttonPress = 0;
     }
