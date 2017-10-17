@@ -20,8 +20,8 @@ int main(void) {
     TB0CTL= TBSSEL_1 + MC_1; //Set up Timer B0, Up mode, ACLK
     TB0CCTL0 = 0x10; //set up compare mode
     TB0CCR0 = 12000; //set up TB0CCR0; LED frequency = 32kHz/12000 
-    TB0CCTL1 = 0x10;    // Set up compare mode
-    TB0CCR1 = 3000;     // CCR1 assigned value
+    TB0CCTL1 = 0x10;  // Set up compare mode
+    TB0CCR1 = 3000;  // CCR1 assigned value
     
     _BIS_SR(LPM4_bits + GIE); //Low Power Mode 4
 
