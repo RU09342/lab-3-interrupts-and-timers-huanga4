@@ -7,34 +7,31 @@
  * Timer A Blink
  */
 int main(void) {
-    WDTCTL = WDTPW | WDTHOLD;// Stop watchdog timer
+    WDTCTL = WDTPW | WDTHOLD;// Stop watchdog
 
     P1OUT &= ~(BIT0); // Clear P1.0
-    P1DIR |=BIT0; //set Port 1.0 output ---LED
+    P1DIR |=BIT0; //set Port 1.0 LED
 
-    P1OUT &= ~(BIT6);
-    P1DIR |=BIT6; //set Port 1.6 output ---LED
+    P1OUT &= ~(BIT6); //Clear
+    P1DIR |=BIT6; //set Port 1.6 LED
 
-
-    TA0CTL= TASSEL_1 + MC_1; //Set up Timer A0 in Up mode and use ACLK
-    TA0CCTL0 = 0x10; //Set up Timer A0 in the compare mode
-    TA0CCR0 = 12000;  //set up TA0CCR0, and have Timer A0 (TA0R) to count to its contents.
-                      // 32kHz/12000 is the frequency at which the LED will blink
-    TA0CCTL1 = 0x10;    // Set up Timer A instance 1 CCR to Compare mode
-    TA0CCR1 = 3000;     // Set up value for CCR1 to 3000.
-                        // 32kHz/3000 is the frequency at which the LED will blink
-    //enter LPM4 mode and enable global interrupt
-    _BIS_SR(LPM4_bits + GIE);
+    TA0CTL= TASSEL_1 + MC_1; //Set up Timer B0, Up mode, ACLK
+    TA0CCTL0 = 0x10; //set up compare mode
+    TA0CCR0 = 12000; //assign TA0CCR0; LED frequency = 32kHz/12000 
+    TA0CCTL1 = 0x10; // Set up compare mode
+    TA0CCR1 = 3000; // assign TA0CCR1; LED frequency = 32kHz/3000
+    
+    _BIS_SR(LPM4_bits + GIE);  //Low Power Mode 4
 }
-//Port 1 ISR
+
 #pragma vector=TIMER0_A0_VECTOR
 #pragma vector = TIMER0_A1_VECTOR
 __interrupt void Timer_A(void)
 {
-    P1OUT ^= 0x01; //Toggle the P1.0 LED
-    switch (TA0IV) //Choose the right Interrupt Vector for value of TA0CCR1
+    P1OUT ^= 0x01; //Toggle
+    switch (TA0IV) //choose correct value for corresponding interrupt
     {
-        case TA0IV_TACCR1: P1OUT ^= BIT6; //Toggle the P1.6 LED
+        case TA0IV_TACCR1: P1OUT ^= BIT6; //Toggle 
         break;
     }
 }
